@@ -1,0 +1,5 @@
+configparser
+python-twitch-client
+sentry-sdk
+streamlink
+requests<3.0,>=2.21.0
