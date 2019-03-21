@@ -73,7 +73,7 @@ def checkStreams(channel, quality):
                     in_progress_name = in_progress_directory + file_name
                     save_name = save_directory + file_name
                     logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
-                    subprocess.call(['streamlink', url, quality, '-o', in_progress_name, '--retry-streams', 10, '--retry-max', 5])
+                    subprocess.call(['streamlink', url, quality, '-o', in_progress_name])
                     subprocess.call(['mv', in_progress_name, save_name])
                     subprocess.call(['rm', channel])
             else:
