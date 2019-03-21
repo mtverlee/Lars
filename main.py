@@ -11,8 +11,7 @@ from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
-sentry_sdk.init("https://89abf7559da84797b547a1e73c2619a9@sentry.io/1379532")
-
+sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
 try:
     # General variable setup.
     run = True
@@ -39,6 +38,8 @@ try:
 except KeyboardInterrupt:
     print("Exiting!")
     exit()
+except Exception as e:
+    sentry_sdk.capture_exception(e)
 
 # Clean up channel names.
 def cleanChannelNames(channel_names):
@@ -51,6 +52,8 @@ def cleanChannelNames(channel_names):
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
@@ -75,6 +78,8 @@ def checkStreams(channel, quality):
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 # Run the loop.
 while run:
@@ -89,3 +94,5 @@ while run:
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
