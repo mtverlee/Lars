@@ -62,6 +62,7 @@ def checkStreams(channel, quality):
         for stream in islice(streams_iterator, 0, 500):
             if stream != None:
                 if path.isfile(channel):
+                    print('Skipping channel ' + channel + '!')
                     pass
                 else:
                     subprocess.call(['touch', channel])
