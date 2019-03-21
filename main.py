@@ -7,6 +7,7 @@ import threading
 import subprocess
 import datetime
 import time
+from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
@@ -57,15 +58,20 @@ def checkStreams(channel, quality):
         streams_iterator = client.get_streams(user_logins=channel)
         for stream in islice(streams_iterator, 0, 500):
             if stream != None:
-                logging.debug('Found a stream for channel %s.' % (channel))
-                url = 'https://twitch.tv/' + channel
-                time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-                file_name = channel + '_' + time + '.mp4'
-                in_progress_name = in_progress_directory + file_name
-                save_name = save_directory + file_name
-                logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
-                subprocess.call(['streamlink', url, quality, '-o', in_progress_name])
-                subprocess.call(['mv', in_progress_name, save_name])
+                if path.isfile(channel):
+                    pass
+                else:
+                    subprocess.call(['touch', channel])
+                    logging.debug('Found a stream for channel %s.' % (channel))
+                    url = 'https://twitch.tv/' + channel
+                    time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+                    file_name = channel + '_' + time + '.mp4'
+                    in_progress_name = in_progress_directory + file_name
+                    save_name = save_directory + file_name
+                    logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
+                    subprocess.call(['streamlink', url, quality, '-o', in_progress_name])
+                    subprocess.call(['mv', in_progress_name, save_name])
+                    subprocess.call(['rm', channel])
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
