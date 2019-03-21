@@ -38,6 +38,8 @@ try:
 except KeyboardInterrupt:
     print("Exiting!")
     exit()
+except Exception as e:
+    sentry_sdk.capture_exception(e)
 
 # Clean up channel names.
 def cleanChannelNames(channel_names):
@@ -50,6 +52,8 @@ def cleanChannelNames(channel_names):
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
@@ -68,12 +72,14 @@ def checkStreams(channel, quality):
                     in_progress_name = in_progress_directory + file_name
                     save_name = save_directory + file_name
                     logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
-                    subprocess.call(['streamlink', url, quality, '-o', in_progress_name])
+                    subprocess.call(['streamlink', url, quality, '-o', in_progress_name, '--retry-streams', 10, '--retry-max', 5])
                     subprocess.call(['mv', in_progress_name, save_name])
                     subprocess.call(['rm', channel])
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 # Run the loop.
 while run:
@@ -88,3 +94,5 @@ while run:
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
