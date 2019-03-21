@@ -62,7 +62,7 @@ def checkStreams(channel, quality):
         for stream in islice(streams_iterator, 0, 500):
             if stream != None:
                 if path.isfile(channel):
-                    print('Skipping channel ' + channel + '!')
+                    logging.info('Channel %s is already recording.' % (channel))
                     pass
                 else:
                     subprocess.call(['touch', channel])
@@ -76,6 +76,9 @@ def checkStreams(channel, quality):
                     subprocess.call(['streamlink', url, quality, '-o', in_progress_name, '--retry-streams', 10, '--retry-max', 5])
                     subprocess.call(['mv', in_progress_name, save_name])
                     subprocess.call(['rm', channel])
+            else:
+                logging.info('Channel %s is not online.' % (channel))
+                pass
     except KeyboardInterrupt:
         print("Exiting!")
         exit()
