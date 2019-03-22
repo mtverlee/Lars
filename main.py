@@ -21,11 +21,14 @@ try:
     run = True
     sleep_time = 10
     debug = False
+    fallback_quality = '480p'
 
     # Setup configparser and get variables from config file.
     parser = configparser.ConfigParser()
     parser.read('config.ini')
     quality = parser.get('config', 'quality')
+    if quality == '':
+        quality = fallback_quality
     if debug:
         print('Using quality: %s' % (quality))
     logging.info('Using quality: %s' % (quality))
