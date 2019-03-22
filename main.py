@@ -63,7 +63,7 @@ def checkStreams(channel, quality):
             logging.info(str(stream))
             if stream != None:
                 if path.isfile(channel):
-                    current_processes = subprocess.check_output(['ps', '-aux'])
+                    current_processes = subprocess.check_output(['ps', '-a'])
                     if 'streamlink' in current_processes:
                         print('Channel %s is already recording.' % (channel))
                         logging.info('Channel %s is already recording.' % (channel))
