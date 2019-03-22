@@ -59,6 +59,8 @@ def checkStreams(channel, quality):
     try:
         streams_iterator = client.get_streams(user_logins=channel)
         for stream in islice(streams_iterator, 0, 500):
+            print(str(stream))
+            logging.info(str(stream))
             if stream != None:
                 if path.isfile(channel):
                     current_processes = subprocess.check_output(['ps', '-aux'])
