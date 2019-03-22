@@ -71,6 +71,7 @@ def checkStreams(channel, quality):
                     else:
                         subprocess.call(['rm', channel])
                         print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
+                        logging.info('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
                 else:
                     subprocess.call(['touch', channel])
                     print('Found a stream for channel %s.' % (channel))
