@@ -23,7 +23,13 @@ try:
     parser = configparser.ConfigParser()
     parser.read('config.ini')
     quality = parser.get('config', 'quality')
+    if debug:
+        print('Using quality: %s' % (quality))
+    logging.info('Using quality: %s' % (quality))
     client_id_auth = parser.get('auth', 'user_id')
+    if debug:
+        print('Using Client-ID: %s' % (client_id_auth))
+    logging.info('Using Client-ID: %s' % (client_id_auth))
     channel_names = parser.get('config', 'channels').split(', ')
     save_directory = parser.get('config', 'save_directory')
     if not save_directory.endswith('/'):
