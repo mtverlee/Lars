@@ -81,7 +81,7 @@ def checkStreams(channel, quality):
                                     '-o',
                                     in_progress_name,
                                     '--default-stream',
-                                    '720p, 480p',
+                                    '720p,480p',
                                     '--retry-streams',
                                     '10',
                                     '--retry-max',
