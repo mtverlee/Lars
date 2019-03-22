@@ -8,7 +8,6 @@ import subprocess
 import datetime
 import time
 from os import path
-import commands
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
