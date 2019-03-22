@@ -17,6 +17,7 @@ try:
     # General variable setup.
     run = True
     sleep_time = 10
+    debug = False
 
     # Setup configparser and get variables from config file.
     parser = configparser.ConfigParser()
@@ -59,29 +60,34 @@ def checkStreams(channel, quality):
     try:
         streams_iterator = client.get_streams(user_logins=channel)
         for stream in islice(streams_iterator, 0, 500):
-            print(str(stream))
+            if debug:
+                print(str(stream))
             logging.info(str(stream))
             if stream != None:
                 if path.isfile(channel):
                     current_processes = subprocess.check_output(['ps', '-a'])
                     if 'streamlink' in current_processes:
-                        print('Channel %s is already recording.' % (channel))
+                        if debug:
+                            print('Channel %s is already recording.' % (channel))
                         logging.info('Channel %s is already recording.' % (channel))
                         pass
                     else:
                         subprocess.call(['rm', channel])
-                        print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
+                        if debug:
+                            print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
                         logging.info('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
                 else:
                     subprocess.call(['touch', channel])
-                    print('Found a stream for channel %s.' % (channel))
+                    if debug:
+                        print('Found a stream for channel %s.' % (channel))
                     logging.debug('Found a stream for channel %s.' % (channel))
                     url = 'https://twitch.tv/' + channel
                     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
                     file_name = channel + '_' + time + '.mp4'
                     in_progress_name = in_progress_directory + file_name
                     save_name = save_directory + file_name
-                    print('Starting recording file %s for channel %s.' % (file_name, channel))
+                    if debug:
+                        print('Starting recording file %s for channel %s.' % (file_name, channel))
                     logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
                     subprocess.call(['streamlink',
                                      url,
@@ -98,7 +104,8 @@ def checkStreams(channel, quality):
                     subprocess.call(['mv', in_progress_name, save_name])
                     subprocess.call(['rm',channel])
             else:
-                print('Stream %s not online.' % (channel))
+                if debug:
+                    print('Stream %s not online.' % (channel))
                 logging.info('Channel %s is not online.' % (channel))
                 pass
     except KeyboardInterrupt:
@@ -111,10 +118,12 @@ while run:
     try:
         channel_names_to_check = cleanChannelNames(channel_names)
         for channel in channel_names_to_check:
-            print('Checking channel %s for streams!' % (channel))
+            if debug:
+                print('Checking channel %s for streams!' % (channel))
             logging.info('Checking channel %s for streams!' % (channel))
             t = threading.Thread(target=checkStreams, args=(channel,quality,))
-            print('Starting thread for channel %s.' % (channel))
+            if debug:
+                print('Starting thread for channel %s.' % (channel))
             logging.debug('Starting thread for channel %s.' % (channel))
             t.start()
         time.sleep(sleep_time)
