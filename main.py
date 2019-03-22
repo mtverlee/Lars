@@ -93,8 +93,8 @@ def checkStreams(channel, quality):
                     logging.debug('Found a stream for channel %s.' % (channel))
                     url = 'https://twitch.tv/' + channel
                     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-                    stream_title = (stream['title'].strip()).replace(' ', '_')
-                    file_name = '[' + channel + '](' + time + ')' + stream_title + '.mp4'
+                    stream_title = stream['title'].strip()
+                    file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
                     in_progress_name = in_progress_directory + file_name
                     save_name = save_directory + file_name
                     if debug:
