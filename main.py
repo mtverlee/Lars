@@ -62,7 +62,7 @@ def checkStreams(channel, quality):
         for stream in islice(streams_iterator, 0, 500):
             if debug:
                 print(str(stream))
-            logging.info(str(stream))
+            logging.debug(str(stream))
             if stream != None:
                 if path.isfile(channel):
                     current_processes = subprocess.check_output(['ps', '-a'])
