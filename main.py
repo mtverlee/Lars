@@ -12,6 +12,7 @@ from os import path
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
 sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
+
 try:
     # General variable setup.
     run = True
@@ -36,7 +37,6 @@ try:
     # Setup logging.
     logging.basicConfig(filename='lars.log', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.DEBUG)
 except KeyboardInterrupt:
-    print("Exiting!")
     exit()
 except Exception as e:
     sentry_sdk.capture_exception(e)
@@ -50,7 +50,6 @@ def cleanChannelNames(channel_names):
             channels_to_check.append(channel_name)
         return channels_to_check
     except KeyboardInterrupt:
-        print("Exiting!")
         exit()
     except Exception as e:
         sentry_sdk.capture_exception(e)
@@ -62,16 +61,19 @@ def checkStreams(channel, quality):
         for stream in islice(streams_iterator, 0, 500):
             if stream != None:
                 if path.isfile(channel):
+                    print('Channel %s is already recording.' % (channel))
                     logging.info('Channel %s is already recording.' % (channel))
                     pass
                 else:
                     subprocess.call(['touch', channel])
+                    print('Found a stream for channel %s.' % (channel))
                     logging.debug('Found a stream for channel %s.' % (channel))
                     url = 'https://twitch.tv/' + channel
                     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
                     file_name = channel + '_' + time + '.mp4'
                     in_progress_name = in_progress_directory + file_name
                     save_name = save_directory + file_name
+                    print('Starting recording file %s for channel %s.' % (file_name, channel))
                     logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
                     subprocess.call(['streamlink', url, quality, '-o', in_progress_name])
                     subprocess.call(['mv', in_progress_name, save_name])
@@ -85,7 +87,6 @@ def checkStreams(channel, quality):
                 logging.info('Channel %s is encountering errors.' % (channel))
                 pass
     except KeyboardInterrupt:
-        print("Exiting!")
         exit()
     except Exception as e:
         sentry_sdk.capture_exception(e)
@@ -95,13 +96,14 @@ while run:
     try:
         channel_names_to_check = cleanChannelNames(channel_names)
         for channel in channel_names_to_check:
+            print('Checking channel %s for streams!' % (channel))
             logging.info('Checking channel %s for streams!' % (channel))
             t = threading.Thread(target=checkStreams, args=(channel,quality,))
+            print('Starting thread for channel %s.' % (channel))
             logging.debug('Starting thread for channel %s.' % (channel))
             t.start()
         time.sleep(sleep_time)
     except KeyboardInterrupt:
-        print("Exiting!")
         exit()
     except Exception as e:
         sentry_sdk.capture_exception(e)
