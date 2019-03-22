@@ -8,6 +8,7 @@ import subprocess
 import datetime
 import time
 from os import path
+import commands
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
@@ -16,7 +17,7 @@ sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
 try:
     # General variable setup.
     run = True
-    sleep_time = 120
+    sleep_time = 10
 
     # Setup configparser and get variables from config file.
     parser = configparser.ConfigParser()
@@ -61,9 +62,14 @@ def checkStreams(channel, quality):
         for stream in islice(streams_iterator, 0, 500):
             if stream != None:
                 if path.isfile(channel):
-                    print('Channel %s is already recording.' % (channel))
-                    logging.info('Channel %s is already recording.' % (channel))
-                    pass
+                    current_processes = subprocess.check_output(['ps', '-aux'])
+                    if 'streamlink' in current_processes:
+                        print('Channel %s is already recording.' % (channel))
+                        logging.info('Channel %s is already recording.' % (channel))
+                        pass
+                    else:
+                        subprocess.call(['rm', channel])
+                        print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
                 else:
                     subprocess.call(['touch', channel])
                     print('Found a stream for channel %s.' % (channel))
