@@ -14,6 +14,9 @@ import sentry_sdk
 sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
 
 try:
+    # Setup logging.
+    logging.basicConfig(filename='lars.log', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.DEBUG)
+
     # General variable setup.
     run = True
     sleep_time = 10
@@ -41,8 +44,6 @@ try:
     # Setup Twitch API client.
     client = TwitchHelix(client_id=client_id_auth)
 
-    # Setup logging.
-    logging.basicConfig(filename='lars.log', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.DEBUG)
 except KeyboardInterrupt:
     exit()
 except Exception as e:
