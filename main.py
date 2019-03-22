@@ -77,9 +77,11 @@ def checkStreams(channel, quality):
                     subprocess.call(['mv', in_progress_name, save_name])
                     subprocess.call(['rm', channel])
             elif stream == None:
+                print('Stream %s not online.' % (channel))
                 logging.info('Channel %s is not online.' % (channel))
                 pass
             else:
+                print('Stream %s is encountering errors.' % (channel)) 
                 logging.info('Channel %s is encountering errors.' % (channel))
                 pass
     except KeyboardInterrupt:
