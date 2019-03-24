@@ -52,7 +52,7 @@ try:
     client = TwitchHelix(client_id=client_id_auth)
 except KeyboardInterrupt:
     exit()
-except (SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
+except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
     handleConnectionErrors(e)
 except Exception as e:
     sentry_sdk.capture_exception(e)
@@ -67,7 +67,7 @@ def cleanChannelNames(channel_names):
         return channels_to_check
     except KeyboardInterrupt:
         exit()
-    except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
+    except (OpenSSL.OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
         handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
@@ -126,7 +126,7 @@ def checkStreams(channel, quality):
                 pass
     except KeyboardInterrupt:
         exit()
-    except (SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
+    except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
         handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
@@ -147,7 +147,7 @@ while run:
         time.sleep(sleep_time)
     except KeyboardInterrupt:
         exit()
-    except (SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
+    except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
         handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
