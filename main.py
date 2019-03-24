@@ -117,7 +117,8 @@ def checkStreams(channel, quality):
                                     in_progress_name,
                                     '--hls-live-restart'])
                     subprocess.call(['mv', in_progress_name, save_name])
-                    subprocess.call(['rm',channel])
+                    if path.isfile(channel):
+                        subprocess.call(['rm',channel])
             else:
                 if debug:
                     print('Stream %s not online.' % (channel))
