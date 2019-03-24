@@ -8,6 +8,7 @@ import subprocess
 import datetime
 import time
 import psutil
+import sys
 from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
@@ -84,12 +85,12 @@ def checkStreams(channel, quality):
                 print(str(stream))
             logging.debug(str(stream))
             if stream != None:
-                if path.isfile(channel):
-                    if checkIfProcessRunning('streamlink'):
+                if checkIfProcessRunning('streamlink'):
+                    if path.isfile(channel):
                         if debug:
                             print('Channel %s is already recording.' % (channel))
                         logging.info('Channel %s is already recording.' % (channel))
-                        pass
+                        sys.exit()
                     else:
                         subprocess.call(['rm', channel])
                         if debug:
