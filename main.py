@@ -7,6 +7,7 @@ import threading
 import subprocess
 import datetime
 import time
+import psutil
 from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
@@ -64,6 +65,16 @@ def cleanChannelNames(channel_names):
     except Exception as e:
         sentry_sdk.capture_exception(e)
 
+# Check for process.
+def checkIfProcessRunning(processName):
+    for proc in psutil.process_iter():
+        try:
+            if processName.lower() in proc.name().lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False;
+
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
     try:
@@ -74,7 +85,7 @@ def checkStreams(channel, quality):
             logging.debug(str(stream))
             if stream != None:
                 if path.isfile(channel):
-                    current_processes = subprocess.check_output(['ps', '-a'])
+                    
                     if 'streamlink' in current_processes:
                         if debug:
                             print('Channel %s is already recording.' % (channel))

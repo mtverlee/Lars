@@ -4,7 +4,7 @@ echo "Starting install!"
 printf "\n"
 echo "Making sure python3 is installed."
 printf "\n"
-apt update && apt install python3 python3-pip python3-setuptools
+apt update && apt install python3 python3-pip python3-setuptools python3-dev
 printf "\n"
 echo "Installing requirements."
 printf "\n"
