@@ -85,12 +85,12 @@ def checkStreams(channel, quality):
                 print(str(stream))
             logging.debug(str(stream))
             if stream != None:
-                if checkIfProcessRunning('streamlink'):
-                    if path.isfile(channel):
-                        if debug:
-                            print('Channel %s is already recording.' % (channel))
-                        logging.info('Channel %s is already recording.' % (channel))
-                        sys.exit()
+                if path.isfile(channel):
+                    if checkIfProcessRunning('streamlink'):
+                            if debug:
+                                print('Channel %s is already recording.' % (channel))
+                            logging.info('Channel %s is already recording.' % (channel))
+                            sys.exit()
                     else:
                         subprocess.call(['rm', channel])
                         if debug:
