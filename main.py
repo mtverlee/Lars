@@ -20,7 +20,7 @@ try:
 
     # General variable setup.
     run = True
-    sleep_time = 10
+    sleep_time = 30
     debug = False
     fallback_quality = '480p'
 
