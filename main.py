@@ -13,10 +13,6 @@ from os import path
 import sentry_sdk
 sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
 
-# Handle connection errors.
-def handleConnectionErrors(e):
-    sentry_sdk.capture_message('Connection error! [%s]' % (str(e)))
-
 try:
     # Setup logging.
     logging.basicConfig(filename='lars.log', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.DEBUG)
@@ -52,8 +48,6 @@ try:
     client = TwitchHelix(client_id=client_id_auth)
 except KeyboardInterrupt:
     exit()
-except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
-    handleConnectionErrors(e)
 except Exception as e:
     sentry_sdk.capture_exception(e)
 
@@ -67,8 +61,6 @@ def cleanChannelNames(channel_names):
         return channels_to_check
     except KeyboardInterrupt:
         exit()
-    except (OpenSSL.OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
-        handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
 
@@ -126,8 +118,6 @@ def checkStreams(channel, quality):
                 pass
     except KeyboardInterrupt:
         exit()
-    except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
-        handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
 
@@ -147,7 +137,5 @@ while run:
         time.sleep(sleep_time)
     except KeyboardInterrupt:
         exit()
-    except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
-        handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
