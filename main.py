@@ -67,7 +67,7 @@ def cleanChannelNames(channel_names):
         return channels_to_check
     except KeyboardInterrupt:
         exit()
-    except (SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
+    except (OpenSSL.SysCallError, gaierror, HTTPError, RemoteDisconnected) as e:
         handleConnectionErrors(e)
     except Exception as e:
         sentry_sdk.capture_exception(e)
