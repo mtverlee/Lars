@@ -85,8 +85,7 @@ def checkStreams(channel, quality):
             logging.debug(str(stream))
             if stream != None:
                 if path.isfile(channel):
-                    
-                    if 'streamlink' in current_processes:
+                    if checkIfProcessRunning('streamlink'):
                         if debug:
                             print('Channel %s is already recording.' % (channel))
                         logging.info('Channel %s is already recording.' % (channel))
@@ -115,10 +114,6 @@ def checkStreams(channel, quality):
                                      quality,
                                     '-o',
                                     in_progress_name,
-                                    '--retry-streams',
-                                    '10',
-                                    '--retry-max',
-                                    '10',
                                     '--hls-live-restart'])
                     subprocess.call(['mv', in_progress_name, save_name])
                     subprocess.call(['rm',channel])
