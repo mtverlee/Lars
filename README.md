@@ -8,6 +8,7 @@ Python script to record livestreams from Twitch.
 ## Installation:
 - ```git clone https://github.com/mtverlee/lars```
 - ```cd lars```
+- ```cp config.ini.example config.ini```
 - ```./install.sh```
 - Edit the ```config.ini``` file to include your desired channel names in the format ```name, name, name```.
 - ```sudo systemctl start lars.service```
