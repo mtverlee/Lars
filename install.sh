@@ -43,7 +43,15 @@ echo -n "Enter Twitch Helix Client ID: "
 read client_id
 sed -i "s|user_id = |user_id = $client_id|g" $PWD/config.ini
 printf "\n"
-echo "Done."
+echo "Setting up Pushover notifications."
+printf "\n"
+echo "Do you want to set up Pushover notifications?"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) echo -n "Enter your Pushover user key: "; read user_key; echo -n "Enter your Pushover app key: "; read app_key; sed -i "s|send_pushover_notifications = False|send_pushover_notifications = False|g" $PWD/config.ini; sed -i "s|pushover_user_key = |pushover_user_key = $user_key|g" $PWD/config.ini; sed -i "s|pushover_app_key = |pushover_app_key = $app_key|g" $PWD/config.ini; echo "Done.";;
+        No ) echo "Done.";;
+    esac
+done
 printf "\n"
 echo "Edit the config.ini file to include your desired channel names in the format '<name>, <name>, <name>'."
 printf "\n"
