@@ -132,6 +132,8 @@ def checkStreams(channel, quality):
                 logging.info('Channel %s is not online.' % (channel))
                 pass
         if not checkIfProcessRunning('streamlink'):
+            time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+            stream_title = stream['title'].strip()
             file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
             in_progress_name = in_progress_directory + file_name
             save_name = save_directory + file_name
