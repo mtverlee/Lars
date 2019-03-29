@@ -9,6 +9,7 @@ import datetime
 import time
 import psutil
 import sys
+from pythonNotify import main as pythonNotify
 from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
@@ -45,7 +46,12 @@ try:
     in_progress_directory = parser.get('config', 'in_progress_directory')
     if not in_progress_directory.endswith('/'):
         in_progress_directory = in_progress_directory + "/"
-
+    send_pushover_notifications = parser.get('config', 'send_pushover_notifications')
+    if send_pushover_notifications == "True":
+        send_pushover_notifications = True
+        pushover_user_key = parser.get('config', 'pushover_user_key')
+        pushover_app_key = parser.get('config', 'pushover_app_key')
+    
     # Setup Twitch API client.
     client = TwitchHelix(client_id=client_id_auth)
 except KeyboardInterrupt:
@@ -101,6 +107,8 @@ def checkStreams(channel, quality):
                     if debug:
                         print('Found a stream for channel %s.' % (channel))
                     logging.debug('Found a stream for channel %s.' % (channel))
+                    if send_pushover_notifications:
+                        pythonNotify.sendPushoverNotification(pushover_app_key, pushover_user_key, 'There is a new stream recording now for channel %s!' % (channel), 'New Stream!')
                     url = 'https://twitch.tv/' + channel
                     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
                     stream_title = stream['title'].strip()
