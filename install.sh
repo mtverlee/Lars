@@ -48,8 +48,8 @@ printf "\n"
 echo "Do you want to set up Pushover notifications?"
 select yn in "Yes" "No"; do
     case $yn in
-        Yes ) echo -n "Enter your Pushover user key: "; read user_key; echo -n "Enter your Pushover app key: "; read app_key; sed -i "s|send_pushover_notifications = False|send_pushover_notifications = False|g" $PWD/config.ini; sed -i "s|pushover_user_key = |pushover_user_key = $user_key|g" $PWD/config.ini; sed -i "s|pushover_app_key = |pushover_app_key = $app_key|g" $PWD/config.ini; echo "Done.";;
-        No ) echo "Done.";;
+        Yes ) echo -n "Enter your Pushover user key: "; read user_key; echo -n "Enter your Pushover app key: "; read app_key; sed -i "s|send_pushover_notifications = False|send_pushover_notifications = False|g" $PWD/config.ini; sed -i "s|pushover_user_key = |pushover_user_key = $user_key|g" $PWD/config.ini; sed -i "s|pushover_app_key = |pushover_app_key = $app_key|g" $PWD/config.ini; echo "Done."; break;;
+        No ) echo "Done."; break;;
     esac
 done
 printf "\n"
