@@ -91,6 +91,20 @@ def checkStreams(channel, quality):
                 print(str(stream))
             logging.debug(str(stream))
             if stream != None:
+                if not checkIfProcessRunning('streamlink'):
+                    time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+                    stream_title = stream['title'].strip()
+                    file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
+                    in_progress_name = in_progress_directory + file_name
+                    save_name = save_directory + file_name
+                    subprocess.call(['mv', in_progress_name, save_name])
+                    if debug:
+                        print('Moving in progress files to saved directory.')
+                    logging.info('Moving in progress files to saved directory.')
+                else:
+                    if debug:
+                        print('Stream is currently recording: waiting to move files to saved direcory.')
+                    logging.info('Stream is currently recording: waiting to move files to saved direcory.')
                 if path.isfile(channel):
                     if checkIfProcessRunning('streamlink'):
                             if debug:
@@ -131,13 +145,6 @@ def checkStreams(channel, quality):
                     print('Stream %s not online.' % (channel))
                 logging.info('Channel %s is not online.' % (channel))
                 pass
-            if not checkIfProcessRunning('streamlink'):
-                time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-                stream_title = stream['title'].strip()
-                file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
-                in_progress_name = in_progress_directory + file_name
-                save_name = save_directory + file_name
-                subprocess.call(['mv', in_progress_name, save_name])
     except KeyboardInterrupt:
         exit()
     except Exception as e:
