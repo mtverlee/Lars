@@ -1,0 +1,3 @@
+[submodule "pythonNotify"]
+	path = pythonNotify
+	url = https://github.com/mtverlee/pythonNotify
