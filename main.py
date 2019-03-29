@@ -108,7 +108,7 @@ def checkStreams(channel, quality):
                         print('Found a stream for channel %s.' % (channel))
                     logging.debug('Found a stream for channel %s.' % (channel))
                     if send_pushover_notifications:
-                        pythonNotify.sendPushoverNotification(pushover_app_key, pushover_user_key, 'There is a new stream recording now for channel %s!' % (channel), 'New Stream!')
+                        pythonNotify.sendPushoverNotification(pushover_app_key, pushover_user_key, 'There is a new stream recording now for channel %s!' % (channel), 'New Stream!', 0)
                     url = 'https://twitch.tv/' + channel
                     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
                     stream_title = stream['title'].strip()
