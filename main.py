@@ -116,7 +116,6 @@ def checkStreams(channel, quality):
                                     '-o',
                                     in_progress_name,
                                     '--hls-live-restart'])
-                    subprocess.call(['mv', in_progress_name, save_name])
                     if path.isfile(channel):
                         subprocess.call(['rm',channel])
             else:
@@ -124,6 +123,8 @@ def checkStreams(channel, quality):
                     print('Stream %s not online.' % (channel))
                 logging.info('Channel %s is not online.' % (channel))
                 pass
+        if not checkIfProcessRunning('streamlink'):
+            subprocess.call(['mv', in_progress_name, save_name])
     except KeyboardInterrupt:
         exit()
     except Exception as e:
