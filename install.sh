@@ -16,6 +16,7 @@ sed -i "s|WorkingDirectory=|WorkingDirectory=$PWD|g" $PWD/lars.service
 sed -i "s|ExecStart=|ExecStart=/usr/bin/python3 $PWD/main.py|g" $PWD/lars.service
 echo "Setting file save directories and editing config files."
 echo "lars saves files it is currently recording in a different directory than the rest of the completed recordings."
+cp config.ini.example config.ini
 echo -n "Enter directory to write in-progress streams to (end with /): "
 read in_progress
 sed -i "s|in_progress_directory = |in_progress_directory = $in_progress|g" $PWD/config.ini
