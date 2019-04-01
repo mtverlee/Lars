@@ -165,6 +165,7 @@ def checkStreams(channel, quality):
         exit()
     except Exception as e:
         sentry_sdk.capture_exception(e)
+
 # Run the loop.
 while run:
     try:
