@@ -54,6 +54,8 @@ try:
         send_pushover_notifications = True
         pushover_user_key = parser.get('config', 'pushover_user_key')
         pushover_app_key = parser.get('config', 'pushover_app_key')
+    else:
+        send_pushover_notifications = False
     
     # Setup Twitch API client.
     client = TwitchHelix(client_id=client_id_auth)
