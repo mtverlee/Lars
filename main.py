@@ -112,6 +112,7 @@ def checkStreams(channel, quality):
                 if debug:
                     print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
                 logging.info('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
+                sys.exit()
         else:
             if checkIfProcessRunning('streamlink'):
                 subprocess.call(['touch', channel])
@@ -146,7 +147,8 @@ def checkStreams(channel, quality):
                                         quality,
                                         '-o',
                                         in_progress_name,
-                                        '--hls-live-restart'])
+                                        '--hls-live-restart',
+                                        '--twitch-disable-hosting'])
                         if path.isfile(channel):
                             subprocess.call(['rm',channel])
                     elif stream == None:
@@ -163,7 +165,6 @@ def checkStreams(channel, quality):
         exit()
     except Exception as e:
         sentry_sdk.capture_exception(e)
-
 # Run the loop.
 while run:
     try:
