@@ -54,6 +54,8 @@ try:
         send_pushover_notifications = True
         pushover_user_key = parser.get('config', 'pushover_user_key')
         pushover_app_key = parser.get('config', 'pushover_app_key')
+    else:
+        send_pushover_notifications = False
     
     # Setup Twitch API client.
     client = TwitchHelix(client_id=client_id_auth)
@@ -87,15 +89,16 @@ def checkIfProcessRunning(processName):
 
 # Move in-progress files to saved if streamlink isn't recording anything.
 def moveFiles(stream, channel):
-    time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-    stream_title = stream['title'].strip()
-    file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
-    in_progress_name = in_progress_directory + file_name
-    save_name = save_directory + file_name
-    subprocess.call(['mv', in_progress_name, save_name])
-    if debug:
-        print('Moving in progress files to saved directory.')
-    logging.info('Moving in progress files to saved directory.')
+    if not checkIfProcessRunning('streamlink'):
+        time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+        stream_title = stream['title'].strip()
+        file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
+        in_progress_name = in_progress_directory + file_name
+        save_name = save_directory + file_name
+        subprocess.call(['mv', in_progress_name, save_name])
+        if debug:
+            print('Moving in progress files to saved directory.')
+        logging.info('Moving in progress files to saved directory.')
 
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
@@ -107,7 +110,6 @@ def checkStreams(channel, quality):
                 logging.info('Channel %s is already recording.' % (channel))
                 sys.exit()
             else:
-                moveFiles(stream, channel)
                 subprocess.call(['rm', channel])
                 if debug:
                     print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
@@ -123,6 +125,7 @@ def checkStreams(channel, quality):
             else:
                 streams_iterator = client.get_streams(user_logins=channel)
                 for stream in islice(streams_iterator, 0, 500):
+                    moveFiles(stream, channel)
                     if debug:
                         print(str(stream))
                     logging.debug(str(stream))
