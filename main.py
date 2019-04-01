@@ -14,7 +14,10 @@ from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
-sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
+sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494",
+                max_breadcrumbs=50,
+                environment='dev',
+)
 
 try:
     # Setup logging.
