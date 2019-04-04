@@ -1,0 +1,11 @@
+[auth]
+user_id = 
+
+[config]
+channels = ''
+quality = best
+save_directory = 
+in_progress_directory = 
+send_pushover_notifications = False
+pushover_user_key = 
+pushover_app_key = 

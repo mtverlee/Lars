@@ -6,7 +6,7 @@ Python script to record livestreams from Twitch.
 - Uses [streamlink](https://github.com/streamlink/streamlink) to record streams.
 
 ## Installation:
-- ```git clone https://github.com/mtverlee/lars```
+- ```git clone https://github.com/mtverlee/lars --recursive```
 - ```cd lars```
 - ```./install.sh```
 - Edit the ```config.ini``` file to include your desired channel names in the format ```name, name, name```.

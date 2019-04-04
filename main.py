@@ -9,11 +9,15 @@ import datetime
 import time
 import psutil
 import sys
+from pythonNotify import main as pythonNotify
 from os import path
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
-sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494")
+sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494",
+                max_breadcrumbs=50,
+                environment='master',
+)
 
 try:
     # Setup logging.
@@ -45,7 +49,14 @@ try:
     in_progress_directory = parser.get('config', 'in_progress_directory')
     if not in_progress_directory.endswith('/'):
         in_progress_directory = in_progress_directory + "/"
-
+    send_pushover_notifications = parser.get('config', 'send_pushover_notifications')
+    if send_pushover_notifications == "True":
+        send_pushover_notifications = True
+        pushover_user_key = parser.get('config', 'pushover_user_key')
+        pushover_app_key = parser.get('config', 'pushover_app_key')
+    else:
+        send_pushover_notifications = False
+    
     # Setup Twitch API client.
     client = TwitchHelix(client_id=client_id_auth)
 except KeyboardInterrupt:
@@ -76,54 +87,83 @@ def checkIfProcessRunning(processName):
             pass
     return False;
 
+# Move in-progress files to saved if streamlink isn't recording anything.
+def moveFiles(stream, channel):
+    if not checkIfProcessRunning('streamlink'):
+        time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+        stream_title = stream['title'].strip()
+        file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
+        in_progress_name = in_progress_directory + file_name
+        save_name = save_directory + file_name
+        subprocess.call(['mv', in_progress_name, save_name])
+        if debug:
+            print('Moving in progress files to saved directory.')
+        logging.info('Moving in progress files to saved directory.')
+
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
     try:
-        streams_iterator = client.get_streams(user_logins=channel)
-        for stream in islice(streams_iterator, 0, 500):
-            if debug:
-                print(str(stream))
-            logging.debug(str(stream))
-            if stream != None:
-                if path.isfile(channel):
-                    if checkIfProcessRunning('streamlink'):
-                            if debug:
-                                print('Channel %s is already recording.' % (channel))
-                            logging.info('Channel %s is already recording.' % (channel))
-                            sys.exit()
-                    else:
-                        subprocess.call(['rm', channel])
-                        if debug:
-                            print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
-                        logging.info('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
-                else:
-                    subprocess.call(['touch', channel])
-                    if debug:
-                        print('Found a stream for channel %s.' % (channel))
-                    logging.debug('Found a stream for channel %s.' % (channel))
-                    url = 'https://twitch.tv/' + channel
-                    time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-                    stream_title = stream['title'].strip()
-                    file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
-                    in_progress_name = in_progress_directory + file_name
-                    save_name = save_directory + file_name
-                    if debug:
-                        print('Starting recording file %s for channel %s.' % (file_name, channel))
-                    logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
-                    subprocess.call(['streamlink',
-                                     url,
-                                     quality,
-                                    '-o',
-                                    in_progress_name,
-                                    '--hls-live-restart'])
-                    subprocess.call(['mv', in_progress_name, save_name])
-                    if path.isfile(channel):
-                        subprocess.call(['rm',channel])
-            else:
+        if path.isfile(channel):
+            if checkIfProcessRunning('streamlink'):
                 if debug:
-                    print('Stream %s not online.' % (channel))
-                logging.info('Channel %s is not online.' % (channel))
-                pass
+                    print('Channel %s is already recording.' % (channel))
+                logging.info('Channel %s is already recording.' % (channel))
+                sys.exit()
+            else:
+                subprocess.call(['rm', channel])
+                if debug:
+                    print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
+                logging.info('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
+                sys.exit()
+        else:
+            if checkIfProcessRunning('streamlink'):
+                subprocess.call(['touch', channel])
+                if debug:
+                    print('Channel %s is already recording but no lock file exists, creating now!' % (channel))
+                logging.info('Channel %s is already recording but no lock file exists, creating now!' % (channel))
+                sys.exit()
+            else:
+                streams_iterator = client.get_streams(user_logins=channel)
+                for stream in islice(streams_iterator, 0, 500):
+                    moveFiles(stream, channel)
+                    if debug:
+                        print(str(stream))
+                    logging.debug(str(stream))
+                    if stream != None:
+                        subprocess.call(['touch', channel])
+                        if debug:
+                            print('Found a stream for channel %s.' % (channel))
+                        logging.debug('Found a stream for channel %s.' % (channel))
+                        if send_pushover_notifications:
+                            pythonNotify.sendPushoverNotification(pushover_app_key, pushover_user_key, 'There is a new stream recording now for %s!' % (channel), channel + ' is now recording!', 0)
+                        url = 'https://twitch.tv/' + channel
+                        time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+                        stream_title = stream['title'].strip()
+                        file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
+                        in_progress_name = in_progress_directory + file_name
+                        save_name = save_directory + file_name
+                        if debug:
+                            print('Starting recording file %s for channel %s.' % (file_name, channel))
+                        logging.info('Starting recording file %s for channel %s.' % (file_name, channel))
+                        subprocess.call(['streamlink',
+                                        url,
+                                        quality,
+                                        '-o',
+                                        in_progress_name,
+                                        '--hls-live-restart',
+                                        '--twitch-disable-hosting'])
+                        if path.isfile(channel):
+                            subprocess.call(['rm',channel])
+                    elif stream == None:
+                        if debug:
+                            print('Stream %s not online.' % (channel))
+                        logging.info('Channel %s is not online.' % (channel))
+                        pass
+                    else:
+                        if debug:
+                            print('Stream %s is having an error.' % (channel))
+                        logging.info('Stream %s is having an error.' % (channel))
+                        pass
     except KeyboardInterrupt:
         exit()
     except Exception as e:
