@@ -4,3 +4,6 @@ sentry-sdk
 streamlink
 requests<3.0,>=2.21.0
 psutil
+ndg-httpsclient
+pyopenssl
+pyasn1
