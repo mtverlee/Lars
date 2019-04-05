@@ -16,7 +16,7 @@ from os import path
 import sentry_sdk
 sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494",
                 max_breadcrumbs=50,
-                environment='master',
+                environment='dev',
 )
 
 try:
