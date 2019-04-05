@@ -151,6 +151,7 @@ def checkStreams(channel, quality):
                                         '-o',
                                         in_progress_name,
                                         '--hls-live-restart',
+                                        '--twitch-disable-ads',
                                         '--twitch-disable-hosting'])
                         if path.isfile(channel):
                             subprocess.call(['rm',channel])
