@@ -100,7 +100,7 @@ def moveFiles(channel):
             logging.info('Moving in progress files to saved directory.')
 
 # Record stream using streamlink.
-def recordStream(quality, channel):
+def recordStream(stream, quality, channel):
     if debug:
         print('Found a stream for channel %s with quality %s.' % (channel, quality))
     logging.debug('Found a stream for channel %s with quality %s.' % (channel, quality))
@@ -140,7 +140,7 @@ def checkStreams(channel, quality):
                     if debug:
                         print('Channel %s is live but no lockfile exists; creating lockfile and starting recording.' % (channel))
                     logging.info('Channel %s is live but no lockfile exists; creating lockfile and starting recording.' % (channel))
-                    recordStream(quality, channel)
+                    recordStream(stream, quality, channel)
                     moveFiles(channel)
                     sys.exit() # Exit the thread.
             else:
