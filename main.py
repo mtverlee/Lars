@@ -25,7 +25,6 @@ try:
 
     # General variable setup.
     run = True
-    sleep_time = 30
     debug = False
     fallback_quality = '480p'
 
@@ -56,6 +55,7 @@ try:
         pushover_app_key = parser.get('config', 'pushover_app_key')
     else:
         send_pushover_notifications = False
+    sleep_time = int(parser.get('config', 'sleep_time'))
     
     # Setup Twitch API client.
     client = TwitchHelix(client_id=client_id_auth)
