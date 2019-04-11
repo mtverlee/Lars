@@ -94,15 +94,14 @@ def moveFiles(channel):
     for file in files_search:
         if os.path.isfile(in_progress_directory + str(file)):
             files.append(file)
-    print(files)
     for file in files:
         if channel in str(file):
             in_progress_path = in_progress_directory + file
             save_path = save_directory + file
             subprocess.call(['mv', in_progress_path, save_path])
             if debug:
-                print('Moving in progress files to saved directory.')
-            logging.info('Moving in progress files to saved directory.')
+                print('Moving file %s to saved directory.' % (file))
+            logging.info('Moving file %s to saved directory.' % (file))
 
 # Record stream using streamlink.
 def recordStream(stream, quality, channel):
