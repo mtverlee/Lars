@@ -10,7 +10,7 @@ import time
 import psutil
 import sys
 from pythonNotify import main as pythonNotify
-from os import path, listdir, isfile
+import os
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
@@ -89,7 +89,7 @@ def checkIfProcessRunning(processName):
 
 # Move in-progress files to saved if streamlink isn't recording anything.
 def moveFiles(channel):
-    files = [f for f in listdir(in_progress_directory) if isfile(join(in_progress_directory, f))]
+    files = [f for f in os.listdir(in_progress_directory) if os.path.isfile(join(in_progress_directory, f))]
     for file in files:
         if channel in str(file):
             in_progress_path = in_progress_directory + file
@@ -130,7 +130,7 @@ def checkStreams(channel, quality):
                 print(str(stream))
             logging.debug(str(stream))
             if stream != None:
-                if path.isfile(channel): # If channel is live and the lockfile exists.
+                if os.path.isfile(channel): # If channel is live and the lockfile exists.
                     if debug:
                         print('Channel %s is already recording; skipping channel.' % (channel))
                     logging.info('Channel %s is already recording; skipping channel.' % (channel))
@@ -144,7 +144,7 @@ def checkStreams(channel, quality):
                     moveFiles(channel)
                     sys.exit() # Exit the thread.
             else:
-                if path.isfile(channel): # If the stream is NOT live and the lockfile exists.
+                if os.path.isfile(channel): # If the stream is NOT live and the lockfile exists.
                     subprocess.call('rm', channel)
                     if debug:
                         print('Lock file for channel %s exists but no stream is recording; removing lock file.' % (channel))
