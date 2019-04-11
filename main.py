@@ -123,7 +123,7 @@ def recordStream(stream, quality, channel):
                     in_progress_name,
                     '--hls-live-restart',
                     '--twitch-disable-ads',
-                '--twitch-disable-hosting'])
+                    '--twitch-disable-hosting'])
 
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
