@@ -10,7 +10,7 @@ import time
 import psutil
 import sys
 from pythonNotify import main as pythonNotify
-from os import path, listdir
+from os import path, listdir, isfile
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
