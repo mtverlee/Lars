@@ -103,34 +103,19 @@ def moveFiles(stream, channel):
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
     try:
-        if path.isfile(channel):
-            if checkIfProcessRunning('streamlink'):
-                if debug:
-                    print('Channel %s is already recording.' % (channel))
-                logging.info('Channel %s is already recording.' % (channel))
-                sys.exit()
-            else:
-                subprocess.call(['rm', channel])
-                if debug:
-                    print('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
-                logging.info('Channel %s is not recording but lock file exists; cleaning up.' % (channel))
-                sys.exit()
-        else:
-            if checkIfProcessRunning('streamlink'):
-                subprocess.call(['touch', channel])
-                if debug:
-                    print('Channel %s is already recording but no lock file exists, creating now!' % (channel))
-                logging.info('Channel %s is already recording but no lock file exists, creating now!' % (channel))
-                sys.exit()
-            else:
-                streams_iterator = client.get_streams(user_logins=channel)
-                for stream in islice(streams_iterator, 0, 500):
-                    moveFiles(stream, channel)
-                    if debug:
-                        print(str(stream))
-                    logging.debug(str(stream))
-                    if stream != None:
-                        subprocess.call(['touch', channel])
+        streams_iterator = client.get_streams(user_logins=channel)
+        for stream in islice(streams_iterator, 0, 500):
+            if debug:
+                print(str(stream))
+            logging.debug(str(stream))
+            if stream != None:
+                if path.isfile(channel):
+                    if checkIfProcessRunning('streamlink'):
+                        if debug:
+                            print('Channel %s is already recording.' % (channel))
+                        logging.info('Channel %s is already recording.' % (channel))
+                        sys.exit()
+                    else:
                         if debug:
                             print('Found a stream for channel %s.' % (channel))
                         logging.debug('Found a stream for channel %s.' % (channel))
@@ -153,18 +138,24 @@ def checkStreams(channel, quality):
                                         '--hls-live-restart',
                                         '--twitch-disable-ads',
                                         '--twitch-disable-hosting'])
-                        if path.isfile(channel):
-                            subprocess.call(['rm',channel])
-                    elif stream == None:
-                        if debug:
-                            print('Stream %s not online.' % (channel))
-                        logging.info('Channel %s is not online.' % (channel))
-                        pass
-                    else:
-                        if debug:
-                            print('Stream %s is having an error.' % (channel))
-                        logging.info('Stream %s is having an error.' % (channel))
-                        pass
+            elif stream == None:
+                if path.isfile(channel):
+                    subprocess.call(['rm', channel])
+                    if debug:
+                        print('Lockfile for channel %s exists, but channel is not live; removing.' % (channel))
+                    logging.info('Lockfile for channel %s exists, but channel is not live; removing.' % (channel))
+                    moveFiles(stream, channel)
+                    sys.exit()
+                    if debug:
+                        print('Stream %s not online.' % (channel))
+                    logging.info('Channel %s is not online.' % (channel))
+                    sys.exit()
+                else:
+                    if debug:
+                        print('Stream %s not online.' % (channel))
+                    logging.info('Channel %s is not online.' % (channel))
+                    moveFiles(stream, channel)
+                    sys.exit()
     except KeyboardInterrupt:
         exit()
     except Exception as e:
