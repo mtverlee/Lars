@@ -117,13 +117,13 @@ def recordStream(stream, quality, channel):
     in_progress_name = in_progress_directory + file_name
     save_name = save_directory + file_name
     subprocess.call(['streamlink',
-        url,
-        quality,
-        '-o',
-        in_progress_name,
-        '--hls-live-restart',
-        '--twitch-disable-ads',
-        '--twitch-disable-hosting'])
+                    url,
+                    quality,
+                    '-o',
+                    in_progress_name,
+                    '--hls-live-restart',
+                    '--twitch-disable-ads',
+                '--twitch-disable-hosting'])
 
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
