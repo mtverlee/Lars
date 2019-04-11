@@ -90,7 +90,8 @@ def checkIfProcessRunning(processName):
 # Move in-progress files to saved if streamlink isn't recording anything.
 def moveFiles(channel):
     files = []
-    for file in (os.listdir(in_progress_directory)):
+    files_search = os.listdir(in_progress_directory)
+    for file in files_search:
         if os.path.isfile(file):
             files.append(file)
     print(files)
