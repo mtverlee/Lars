@@ -91,6 +91,7 @@ def checkIfProcessRunning(processName):
 def moveFiles(channel):
     files = []
     files_search = os.listdir(in_progress_directory)
+    print(files_search)
     for file in files_search:
         if os.path.isfile(file):
             files.append(file)
