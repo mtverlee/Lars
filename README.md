@@ -1,3 +1,5 @@
+![lars Logo](https://mattverlee.me/images/portfolio/lars.png)
+
 # lars
 Python script to record livestreams from Twitch.
 
