@@ -1,4 +1,4 @@
-![lars Logo](lars.png)
+![Lars](lars.png?raw=true "Lars")
 
 # lars
 Python script to record livestreams from Twitch.
