@@ -112,8 +112,7 @@ def recordStream(stream, quality, channel):
         pythonNotify.sendPushoverNotification(pushover_app_key, pushover_user_key, 'There is a new stream recording now for %s!' % (channel), channel + ' is now recording!', 0)
     url = 'https://twitch.tv/' + channel
     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-    stream_title = stream['title'].strip()
-    file_name = '[' + channel + '](' + time + ')<' + stream_title + '>.mp4'
+    file_name = '[' + channel + '](' + time + ').mp4'
     in_progress_name = in_progress_directory + file_name
     save_name = save_directory + file_name
     subprocess.call(['streamlink',
