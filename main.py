@@ -137,7 +137,7 @@ def checkStreams(channel, quality):
                     if debug:
                         print('Channel %s is already recording; skipping channel.' % (channel))
                     logging.info('Channel %s is already recording; skipping channel.' % (channel))
-                    return 0 # Exit the thread.
+                    sys.exit(0) # Exit the thread.
                 else: # If channel is live and the lockfile does NOT exist.
                     subprocess.call(['touch', channel])
                     if debug:
@@ -145,7 +145,7 @@ def checkStreams(channel, quality):
                     logging.info('Channel %s is live but no lockfile exists; creating lockfile and starting recording.' % (channel))
                     recordStream(stream, quality, channel)
                     moveFiles(channel)
-                    return 0 # Exit the thread.
+                    sys.exit(0) # Exit the thread.
             else:
                 if os.path.isfile(channel): # If the stream is NOT live and the lockfile exists.
                     subprocess.call('rm', channel)
@@ -153,13 +153,13 @@ def checkStreams(channel, quality):
                         print('Lock file for channel %s exists but no stream is recording; removing lock file.' % (channel))
                     logging.info('Lock file for channel %s exists but no stream is recording; removing lock file.' % (channel))
                     moveFiles(channel)
-                    return 0 # Exit the thread.
+                    sys.exit(0) # Exit the thread.
                 else: #If the stream is NOT live and the lockfile does NOT exist.
                     if debug:
                         print('Channel %s is not live; skipping channel.' % (channel))
                     logging.info('Channel %s is not live; skipping channel.' % (channel))
                     moveFiles(channel)
-                    return 0 # Exit the thread.
+                    sys.exit(0) # Exit the thread.
     except KeyboardInterrupt:
         exit()
     except Exception as e:
