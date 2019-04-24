@@ -16,7 +16,7 @@ import pickledb
 import sentry_sdk
 sentry_sdk.init("https://3d82a59570f8433a9d53017e0e84efd5@sentry.io/1441155",
                 max_breadcrumbs=50,
-                environment='master',
+                environment='dev',
 )
 
 try:
