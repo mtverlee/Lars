@@ -1,0 +1,9 @@
+[auth]
+user_id = 
+
+[config]
+channels = ''
+quality = best
+save_directory = 
+in_progress_directory = 
+sleep_time = 30
