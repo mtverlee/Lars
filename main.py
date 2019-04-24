@@ -8,13 +8,13 @@ import subprocess
 import datetime
 import time
 import psutil
-import sys
-from pythonNotify import main as pythonNotify
 import os
+import sys
+import pickledb
 
 # Sentry.io error tracking. Uncomment if you're worried about this.
 import sentry_sdk
-sentry_sdk.init("https://00404187dc264687a17c8311c3c2f58c@sentry.io/1420494",
+sentry_sdk.init("https://3d82a59570f8433a9d53017e0e84efd5@sentry.io/1441155",
                 max_breadcrumbs=50,
                 environment='master',
 )
@@ -48,13 +48,6 @@ try:
     in_progress_directory = parser.get('config', 'in_progress_directory')
     if not in_progress_directory.endswith('/'):
         in_progress_directory = in_progress_directory + "/"
-    send_pushover_notifications = parser.get('config', 'send_pushover_notifications')
-    if send_pushover_notifications == "True":
-        send_pushover_notifications = True
-        pushover_user_key = parser.get('config', 'pushover_user_key')
-        pushover_app_key = parser.get('config', 'pushover_app_key')
-    else:
-        send_pushover_notifications = False
     sleep_time = int(parser.get('config', 'sleep_time'))
     
     # Setup Twitch API client.
@@ -85,7 +78,7 @@ def checkIfProcessRunning(processName):
                 return True
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
-    return False;
+    return False
 
 # Move in-progress files to saved if streamlink isn't recording anything.
 def moveFiles(channel):
@@ -108,8 +101,6 @@ def recordStream(stream, quality, channel):
     if debug:
         print('Found a stream for channel %s with quality %s.' % (channel, quality))
     logging.debug('Found a stream for channel %s with quality %s.' % (channel, quality))
-    if send_pushover_notifications:
-        pythonNotify.sendPushoverNotification(pushover_app_key, pushover_user_key, 'There is a new stream recording now for %s!' % (channel), channel + ' is now recording!', 0)
     url = 'https://twitch.tv/' + channel
     time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     file_name = '[' + channel + '](' + time + ').mp4'
@@ -127,39 +118,41 @@ def recordStream(stream, quality, channel):
 # Use the Twitch API to check if channels are live and if so, record them.
 def checkStreams(channel, quality):
     try:
+        db = pickledb.load('db.json', False)
         streams_iterator = client.get_streams(user_logins=channel)
         for stream in islice(streams_iterator, 0, 500):
             if debug:
                 print(str(stream))
             logging.debug(str(stream))
             if stream != None:
-                if os.path.isfile(channel): # If channel is live and the lockfile exists.
+                if db.get(channel) == 'true': # If channel is live and the lockfile exists.
                     if debug:
                         print('Channel %s is already recording; skipping channel.' % (channel))
                     logging.info('Channel %s is already recording; skipping channel.' % (channel))
-                    sys.exit(0) # Exit the thread.
+                    sys.exit(0)
                 else: # If channel is live and the lockfile does NOT exist.
-                    subprocess.call(['touch', channel])
+                    db.set(channel, 'true')
                     if debug:
                         print('Channel %s is live but no lockfile exists; creating lockfile and starting recording.' % (channel))
                     logging.info('Channel %s is live but no lockfile exists; creating lockfile and starting recording.' % (channel))
                     recordStream(stream, quality, channel)
                     moveFiles(channel)
-                    sys.exit(0) # Exit the thread.
+                    sys.exit(0)
             else:
                 if os.path.isfile(channel): # If the stream is NOT live and the lockfile exists.
-                    subprocess.call('rm', channel)
+                    db.set(channel, 'false')
                     if debug:
                         print('Lock file for channel %s exists but no stream is recording; removing lock file.' % (channel))
                     logging.info('Lock file for channel %s exists but no stream is recording; removing lock file.' % (channel))
                     moveFiles(channel)
-                    sys.exit(0) # Exit the thread.
+                    sys.exit(0)
                 else: #If the stream is NOT live and the lockfile does NOT exist.
                     if debug:
                         print('Channel %s is not live; skipping channel.' % (channel))
                     logging.info('Channel %s is not live; skipping channel.' % (channel))
                     moveFiles(channel)
-                    sys.exit(0) # Exit the thread.
+                    sys.exit(0)
+        db.dump()
     except KeyboardInterrupt:
         exit()
     except Exception as e:
@@ -177,9 +170,9 @@ while run:
             if debug:
                 print('Starting thread for channel %s.' % (channel))
             logging.debug('Starting thread for channel %s.' % (channel))
-            t.start()
+            t.run()
         time.sleep(sleep_time)
     except KeyboardInterrupt:
         exit()
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    #except Exception as e:
+    #    sentry_sdk.capture_exception(e)

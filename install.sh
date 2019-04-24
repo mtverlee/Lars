@@ -12,11 +12,12 @@ printf "\n"
 printf "\n"
 echo "Editing service file."
 printf "\n"
+cp $PWD/lars.service.example $PWD/lars.service
 sed -i "s|WorkingDirectory=|WorkingDirectory=$PWD|g" $PWD/lars.service
 sed -i "s|ExecStart=|ExecStart=/usr/bin/python3 $PWD/main.py|g" $PWD/lars.service
 echo "Setting file save directories and editing config files."
 echo "lars saves files it is currently recording in a different directory than the rest of the completed recordings."
-cp config.ini.example config.ini
+cp $PWD/config.ini.example $PWD/config.ini
 echo -n "Enter directory to write in-progress streams to (end with /): "
 read in_progress
 sed -i "s|in_progress_directory = |in_progress_directory = $in_progress|g" $PWD/config.ini
@@ -33,7 +34,7 @@ printf "\n"
 echo "Setting up services."
 printf "\n"
 apt install systemd
-sudo cp lars.service /etc/systemd/system/
+sudo cp $PWD/lars.service /etc/systemd/system/
 systemctl daemon-reload
 sudo systemctl enable lars.service
 printf "\n"
@@ -44,14 +45,6 @@ read client_id
 sed -i "s|user_id = |user_id = $client_id|g" $PWD/config.ini
 printf "\n"
 echo "Setting up Pushover notifications."
-printf "\n"
-echo "Do you want to set up Pushover notifications?"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes ) echo -n "Enter your Pushover user key: "; read user_key; echo -n "Enter your Pushover app key: "; read app_key; sed -i "s|send_pushover_notifications = False|send_pushover_notifications = True|g" $PWD/config.ini; sed -i "s|pushover_user_key = |pushover_user_key = $user_key|g" $PWD/config.ini; sed -i "s|pushover_app_key = |pushover_app_key = $app_key|g" $PWD/config.ini; break;;
-        No ) break;;
-    esac
-done
 printf "\n"
 echo "Done."
 printf "\n"
